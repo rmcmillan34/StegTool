@@ -13,6 +13,7 @@ git clone https://github.com/rmcmillan34/StegTool.git
 ## Usage - TODO
 
 ```python
+# An example of code in the README
 import foobar
 
 # returns 'words'
