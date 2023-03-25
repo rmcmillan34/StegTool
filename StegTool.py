@@ -37,30 +37,32 @@ def encode(image: Image, secret_message: str) -> Image:
     binary_secret_message = binary_secret_message + ('0'* (3 - (len(binary_secret_message) % 3)))
 
     # Iterate over each pixel in image
-    pixel_idx = 0
+    # msg_idx keeps track of the bits of secret message that have been encoded.
+    msg_idx = 0
     for x in range(image.width):
         for y in range(image.height):
-            # extract RGB values
-            r,g,b = image.getpixel((x,y))
+            if msg_idx < len(binary_secret_message):
+                # extract RGB values
+                r,g,b = image.getpixel((x,y))
 
-            # Convert values to binary
-            r_binary = format(r,'08b')
-            g_binary = format(g,'08b')
-            b_binary = format(b,'08b')
+                # Convert values to binary
+                r_binary = format(r,'08b')
+                g_binary = format(g,'08b')
+                b_binary = format(b,'08b')
 
-            print(f"R: {r_binary}, G: {g_binary}, B: {b_binary}")
+                # Sanity and debugging 
+                print(f"R: {r_binary}, G: {g_binary}, B: {b_binary}")
 
-            # Check that we have more to encode
-            if pixel_idx < len(binary_secret_message):
                 # Replace Least Significant Bit of each colour channel with message bit
-                r_binary = r_binary[:-1] + binary_secret_message[pixel_idx]
-                g_binary = g_binary[:-1] + binary_secret_message[pixel_idx + 1]
-                b_binary = b_binary[:-1] + binary_secret_message[pixel_idx + 2]
+                r_binary = r_binary[:-1] + binary_secret_message[msg_idx]
+                g_binary = g_binary[:-1] + binary_secret_message[msg_idx + 1]
+                b_binary = b_binary[:-1] + binary_secret_message[msg_idx + 2]
 
+                # Sanity and debugging comparison
                 print(f"NR:{r_binary}, NG:{g_binary}, NB:{b_binary}")
 
                 # Increment pixel index
-                pixel_idx += 3
+                msg_idx += 3
 
                 # Convert back to integers
                 r_int = int(r_binary, 2)
