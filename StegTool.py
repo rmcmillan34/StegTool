@@ -50,7 +50,7 @@ def encode(image: Image, secret_message: str) -> Image:
                 g_binary = format(g,'08b')
                 b_binary = format(b,'08b')
 
-                # Sanity and debugging 
+                # Sanity and debugging
                 print(f"R: {r_binary}, G: {g_binary}, B: {b_binary}")
 
                 # Replace Least Significant Bit of each colour channel with message bit
@@ -61,7 +61,7 @@ def encode(image: Image, secret_message: str) -> Image:
                 # Sanity and debugging comparison
                 print(f"NR:{r_binary}, NG:{g_binary}, NB:{b_binary}")
 
-                # Increment pixel index
+                # Increment message bit index by 3
                 msg_idx += 3
 
                 # Convert back to integers
