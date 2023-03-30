@@ -1,7 +1,7 @@
 # StegTool
 A command line steganograpghy tool to hide messages within audio and image files.
 
-![alt text](https://github.com/rmcmillan34/StegTool/blob/main/logo.jpg?raw=true)
+![alt text](https://github.com/rmcmillan34/StegTool/blob/main/encoded/steg_logo.jpg?raw=true)
 
 ## Installation
 
