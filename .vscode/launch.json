@@ -5,6 +5,9 @@
     "version": "0.2.0",
     "configurations": [
 
+
+
+
         {
             "name": "Encode test",
             "type": "python",
@@ -12,7 +15,16 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["--encode", "test.jpg", "hellohellohellogello"]
+            "args": ["--encode", "test.jpeg", "hello"]
+        },
+        {
+            "name": "Decode test",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": ["--decode", "./encoded/steg_cv2_test.png", "hello"]
         }
     ]
 }
