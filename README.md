@@ -22,7 +22,7 @@ git clone https://github.com/rmcmillan34/StegTool.git
 ### Requirements
 StegTool was written in Python 3.9.7. This version of Python is the recommended minimum, however I believe it will work on any Python 3 installation.
 
-The following modules are required to run this software:
+The following Python modules are required to run this software:
 
 - argparse
 - cv2
@@ -30,7 +30,7 @@ The following modules are required to run this software:
 - system
 
 ## Usage
-StegTool is a command line tool written in python
+
 ```bash output
 usage: StegTool [-h] [-e] [-d] [-v] filename message
 
@@ -52,7 +52,6 @@ optional arguments:
 Pull requests will be welcome after 30th April 2023. For major changes, please open an issue first 
 to discuss what you would like to change.
 
-Please make sure to update tests as appropriate.
 
 ## License
 
