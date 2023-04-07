@@ -5,9 +5,7 @@ A command line steganograpghy tool to hide messages within audio and image files
 
 ## TODO
 [ ] - Complete README documentation
-[ ] - Implement Verbose output
-[ ] - Secret message encryption/password protection
-[ ] - Graphical User Interface
+[x] - Implement Verbose output
 
 
 ## Installation
@@ -18,17 +16,32 @@ Use git clone to install the latest version of StegTool.
 git clone https://github.com/rmcmillan34/StegTool.git
 ```
 
+### Requirements
+StegTool was written in Python 3.9.7. This version of Python is the recommended minimum, however I believe it will work on any Python 3 installation.
+
+The following modules are required to run this software:
+
+- argparse
+- cv2
+- os
+- system
+
 ## Usage
-
+StegTool is a command line tool written in python
 ```sh
-# Encode a secret message into a carrier file.
-python3 StegTool.py IMAGENAME.jpg --encode SECRETMESSAGE
+usage: StegTool [-h] [-e] [-d] [-v] filename message
 
-# Decode a carrier file
-python3 StegTool.py IMAGENAME.jpg --decode
+A comand line tool to encode a secret message within an image file.
 
-# Enable verbose output.
-python3 StegTool.py IMAGENAME.jpg --encode --verbose
+positional arguments:
+  filename       name of file to perform steganographic function on
+  message        Text string of message to be encoded
+
+optional arguments:
+  -h, --help     show this help message and exit
+  -e, --encode   Performs steganographic encode function
+  -d, --decode   Performs steganographic decode function
+  -v, --verbose  Enables a verbose output. Program will output what it is doing.
 ```
 
 ## Contributing
