@@ -30,6 +30,7 @@ The following Python modules are required to run this software:
 - system
 
 ## Usage
+StegTool was created to be run in a command line/terminal environment with Python installed. See below for the usage of StegTool.
 
 ```bash output
 usage: StegTool [-h] [-e] [-d] [-v] filename message
