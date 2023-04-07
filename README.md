@@ -1,11 +1,14 @@
 # StegTool
-A command line steganograpghy tool to hide messages within audio and image files.
+A command line steganograpghy tool to hide messages within an image file.
+
 
 ![alt text](https://github.com/rmcmillan34/StegTool/blob/main/encoded/steg_logo.png?raw=true)
 
 ## TODO
-[ ] - Complete README documentation
-[x] - Implement Verbose output
+- [ ] Complete README documentation
+- [x] Implement Verbose output
+- [ ] Add audio file compatibilty
+- [ ] Add encryption of secret message prior to encoding into carrier file
 
 
 ## Installation
@@ -28,7 +31,7 @@ The following modules are required to run this software:
 
 ## Usage
 StegTool is a command line tool written in python
-```sh
+```bash output
 usage: StegTool [-h] [-e] [-d] [-v] filename message
 
 A comand line tool to encode a secret message within an image file.
