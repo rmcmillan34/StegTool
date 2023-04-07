@@ -10,15 +10,16 @@ import sys
 FILETYPES = ['.jpg','.jpeg','.bmp','.png']
 
 
-
-def encode(image: cv2, secret_message: str, filename: str):
+def encode(image: cv2, secret_message: str, filename: str, verbose: bool):
     '''
     encode function takes a file reference and secret message. secret message is
     embedded within the file using Least Significant Bit (LSB) steganography.
     '''
 
     # Convert secret_message to binary
+    if verbose: print("Converting secret message to binary...")
     binary_secret_message = ''.join(format(ord(char), '08b') for char in secret_message)
+    if verbose: print(f"SECRET MESSAGE: {binary_secret_message}")
 
     # Validate secret will fit within carrier image file
     # Calculate max bits available in image in three channels
@@ -29,19 +30,18 @@ def encode(image: cv2, secret_message: str, filename: str):
 
     # Encode start message token into first three pixels '<!>'
     start_token = ''.join(format(ord(char), '08b') for char in '<!>')
-    print(start_token)
     # Encode stop message token into final three pixels '<?>'
     stop_token = ''.join(format(ord(char), '08b') for char in '<?>')
 
     # Append start_token and stop_token to message
     binary_secret_message = start_token + binary_secret_message + stop_token
-    print(binary_secret_message[:24])
 
     # Ensure secret message is divisible by three by padding the message with 1 or 2 zeros
     binary_secret_message = binary_secret_message + ('0'* (3 - (len(binary_secret_message) % 3)))
 
     # Iterate over each pixel in image
     # msg_idx keeps track of the bits of secret message that have been encoded.
+    if verbose: print("Beginning LSB Encoding...")
     msg_idx = 0
     for y in range(image.shape[0]):
         for x in range(image.shape[1]):
@@ -63,7 +63,7 @@ def encode(image: cv2, secret_message: str, filename: str):
                 b_binary = b_binary[:-1] + binary_secret_message[msg_idx + 2]
 
                 # Sanity and debugging comparison
-                print(f"[{y}][{x}]: NR:{r_binary}, NG:{g_binary}, NB:{b_binary}")
+                #print(f"[{y}][{x}]: NR:{r_binary}, NG:{g_binary}, NB:{b_binary}")
 
                 # Increment message bit index by 3
                 msg_idx += 3
@@ -72,39 +72,43 @@ def encode(image: cv2, secret_message: str, filename: str):
                 r_int = int(r_binary, 2)
                 g_int = int(g_binary, 2)
                 b_int = int(b_binary, 2)
-                print(str(r_int) + ' ' + str(g_int) + ' ' + str(b_int))
 
                 # Store new binary values in image
                 image[y][x] = b_int,g_int,r_int
-                print(image[y][x])
+                #print(image[y][x])
             else:
                 break
 
+    if verbose: print("LSB encoding complete!")
     return image
 
 
 
-def save_image(image: cv2, filename: str):
+def save_image(image: cv2, filename: str, verbose: bool):
     '''
     Save image file with steganographic encoded message
     '''
     # Save image with embedded message as new image
+    if verbose: print("Saving image...")
     filename = filename.split('.')
-    print(cv2.imwrite("./encoded/steg_" + filename[0] + '.png', image))
+    cv2.imwrite("./encoded/steg_" + filename[0] + '.png', image)
+    if verbose: print('Image saved.')
 
     return
 
 
 
-def decode(image: cv2) -> str:
+def decode(image: cv2, verbose: bool) -> str:
     '''
     decode function takes a carrier file image and decodes the image using
     Least Signifocamt Bit steganography and returns the secret message as a string.
     '''
     valid_tokens = ['<!>','<?>']
     # Check that the image contains a valid token
+    if verbose: print("Checking for encoded image..")
     if valid_encoding(image, valid_tokens[0]):
-        message = extract(image)
+        if verbose: print("Image is encoded, beginning decode.")
+        message = extract(image, verbose)
     else:
         print("\nERROR: Not a valid carrier file. Exiting.")
         sys.exit()
@@ -151,11 +155,12 @@ def valid_encoding(image: cv2, token: str) -> bool:
 
 
 
-def extract(image: cv2) -> str:
+def extract(image: cv2, verbose: bool) -> str:
     '''
     Extract the secret message of a known encoded file. returns string containing
     secret message
     '''
+    if verbose: print("Extracting message from carrier file...")
     stop_token = ''.join(format(ord(char), '08b') for char in '<?>')
     message = ''
     stop = False
@@ -192,60 +197,74 @@ def extract(image: cv2) -> str:
     # Generate string from list elements
     output = ''.join([chr(int.from_bytes(x, 'big', signed="False")) for x in bytes_char_list])
 
+    if verbose: print('Message extraction complete.')
     return output
 
 
 
-def open_file(filename: str) -> cv2:
+def open_file(filename: str, verbose: bool) -> cv2:
     '''
-    open the carrier file and return the bytestring of the image
+    open the carrier file and return the opencv image object
     '''
+    if verbose: print(f"Opening: {filename}")
     image = cv2.imread(filename)
     return image
 
 
 
 def main():
+    print()
     # Check CLI arguments are valid.
-    parser = argparse.ArgumentParser()
-    parser.add_argument('filename', type=str,
+    parser = argparse.ArgumentParser(
+                        prog='StegTool',
+                        description='A comand line tool to encode a secret message within an image file.')
+    parser.add_argument('filename',
+                        type=str,
                         help='name of file to perform steganographic function on')
-    parser.add_argument('--encode', help='Performs steganographic encode function',
+    parser.add_argument('-e', '--encode',
+                        help='Performs steganographic encode function',
                         action='store_true')
-    parser.add_argument('--decode', help='Performs steganographic decode function',
+    parser.add_argument('-d','--decode',
+                        help='Performs steganographic decode function',
                         action='store_true')
-    parser.add_argument('message', type=str,
+    parser.add_argument('message',
+                        type=str,
                         help='Text string of message to be encoded')
+    parser.add_argument('-v', '--verbose',
+                        help='Enables a verbose output. Program will output what it is doing.',
+                        action='store_true',
+                        required=False)
 
     args = parser.parse_args()
+
 
     # Quit program if both or neither flag is set
     if args.encode and args.decode:
         print("Only use the --encode or --decode flag, not both")
         sys.exit()
     elif not args.encode and not args.decode:
-        print('use one of the --encode or --decode flags')
+        print('Must use one of the --encode or --decode flags')
         sys.exit()
 
     # Check carrier file exists.
     if not os.path.isfile(args.filename):
-       print("no such file")
+       print("No such file exists.")
        sys.exit()
 
     # Check carrier filetype is valid
     if not (args.filename[-4:] in FILETYPES or args.filename[-5:] in FILETYPES):
-        print("Unsupported filetype")
+        print("Unsupported filetype.")
         sys.exit()
 
     # Open carrier image with Opencv
-    carrier = open_file(args.filename)
+    carrier = open_file(args.filename, args.verbose)
 
     # From provided arguments perform encode or decode functionality.
     if args.encode:
-        encoded_carrier = encode(carrier, args.message, args.filename)
-        save_image(encoded_carrier, args.filename)
+        encoded_carrier = encode(carrier, args.message, args.filename, args.verbose)
+        save_image(encoded_carrier, args.filename, args.verbose)
     elif args.decode:
-        print(f"Secret Message: {decode(carrier)}")
+        print(f"Secret Message: {decode(carrier, args.verbose)}")
 
     else:
         print("ERROR: Incorrect encode/decode flag provided. Exiting.")
